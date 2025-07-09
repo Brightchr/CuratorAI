@@ -13,16 +13,18 @@ const Navbar = () => {
           <a href="#" className="text-zinc-300 hover:text-white">Contact</a>
         </div>
         <div className="space-x-4">
-<Link
-  to="/login"
-  className="relative text-white px-2 py-1 after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 hover:after:w-full"
->
-  Sign In
-</Link>
+          <Link
+            to="/login"
+            className="relative text-white px-2 py-1 after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 hover:after:w-full"
+          >
+            Sign In
+          </Link>
 
-
-
-          <button className="bg-gradient-to-b from-[#114870] to-[#383A80] text-white px-4 py-2 rounded hover:from-[#1b5f91] hover:to-[#4a4eb3] cursor-pointer transition">Get Started</button>
+          <Link to="/signup">
+            <button className="bg-gradient-to-b from-[#114870] to-[#383A80] text-white px-4 py-2 rounded hover:from-[#1b5f91] hover:to-[#4a4eb3] cursor-pointer transition">
+              Get Started
+            </button>
+          </Link>
         </div>
       </div>
     </nav>

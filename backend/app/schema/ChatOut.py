@@ -1,0 +1,1 @@
+#Defines chats sent out to client

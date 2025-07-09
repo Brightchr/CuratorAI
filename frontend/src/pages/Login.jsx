@@ -1,52 +1,80 @@
 // src/pages/Login.jsx
 import { signInWithPopup, auth, provider } from "../firebase";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import {useEffect, useRef, useState} from "react";
+import { loginWithGoogle, loginWithEmail} from "../services/authService.jsx";
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const videoRef = useRef(null);
+  const [ended, setEnded] = useState(false);
 
-  const handleGoogleLogin = async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const token = await result.user.getIdToken();
 
-      const res = await fetch("http://localhost:8000/api/auth/firebase", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken: token }),
-      });
+const handleGoogleLogin = async () => {
+  try {
+    const token = await loginWithGoogle();
+    const res = await fetch("http://localhost:8000/api/auth/auth/firebase", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken: token }),
+    });
+    if (res.ok) navigate("/chat");
+  } catch (err) {
+    console.error("Google Login failed", err);
+  }
+};
 
-      if (res.ok) {
-        navigate("/chat");
-      }
-    } catch (err) {
-      console.error("Login failed", err);
-    }
-  };
+const handleManualLogin = async () => {
+  try {
+    const token = await loginWithEmail(email, password);
+    const res = await fetch("http://localhost:8000/api//auth/auth/firebase", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken: token }),
+    });
+    if (res.ok) navigate("/chat");
+  } catch (err) {
+    console.error("Manual Login failed", err);
+  }
+};
 
-  const handleManualLogin = async () => {
-    console.log("Manual login with", email, password);
-    // Implement login logic here
-  };
 
   return (
     <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
       {/* Background Video */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        poster="/images/TheCurator2.png"
-        className="absolute inset-0 w-full h-full object-cover bg-black"
-      >
-        <source src="/Videos/CuratorMP4.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+      {/* Background Poster Fallback */}
+      {ended && (
+        <img
+          src="/images/TheCurator2.png"
+          alt="The Curator"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      )}
+
+      {/* Background Video */}
+      {!ended && (
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          playsInline
+          preload="auto"
+          poster="/images/TheCurator2.png"
+          className="absolute inset-0 w-full h-full object-cover bg-black"
+          onEnded={() => {
+            const video = videoRef.current;
+            if (video) {
+              video.currentTime = 0;
+              video.pause();
+            }
+          }}
+        >
+          <source src="/Videos/CuratorMP4.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      )}
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/80 backdrop-brightness-75" />
