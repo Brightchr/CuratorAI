@@ -12,6 +12,7 @@ const App = () => {
       {/* Public route outside layout */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/chat" element={<Chat />} />
 
       {/* Routes using layout */}
       <Route element={<MainLayout />}>
@@ -20,7 +21,7 @@ const App = () => {
       </Route>
 
       <Route element={<AuthenticatedLayout />} />
-        <Route path="/chat" element={<Chat />} />
+
     </Routes>
   );
 };

@@ -6,3 +6,7 @@ requests
 python-dotenv
 aiofiles
 python-multipart
+firebase-admin
+SQLAlchemy
+psycopg2-binary
+

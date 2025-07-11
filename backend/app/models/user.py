@@ -11,5 +11,5 @@ class User(Base):
     password = Column(String, nullable=False)
     firstName = Column(String, nullable=False)
     lastName = Column(String, nullable=False)
-    chats = relationship("Chat", back_populates="user")
+    # chats = relationship("Chat", back_populates="user")
 

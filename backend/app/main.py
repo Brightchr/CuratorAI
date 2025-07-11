@@ -1,19 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .api import auth
-from .api import generate  # assumes api/generate.py contains `router = APIRouter()`
+from app.api import auth, generate
 
 app = FastAPI()
 
-# Allow all origins for development (customize this for production)
+# 🛠️ CORS must explicitly list your origin when allow_credentials=True
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
     allow_credentials=True,
-)
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-# Register the generate route module under /api
+
 app.include_router(generate.router, prefix="/api")
-app.include_router(auth.router, prefix="/api/auth")
+# app.include_router(auth.router, prefix="/api/auth")
+

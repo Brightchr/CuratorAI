@@ -17,6 +17,17 @@ const ChatWidget = () => {
     chatContainerRef,
   } = useChatStream();
 
+  const TypingDots = () => {
+  return (
+    <div className="flex space-x-1 justify-end text-blue-300">
+      <span className="animate-bounce">.</span>
+      <span className="animate-bounce delay-200">.</span>
+      <span className="animate-bounce delay-400">.</span>
+    </div>
+  );
+};
+
+
   const closeChat = () => {
     setOpen(false);
     setIsPoppedOut(false); // reset on close
@@ -69,23 +80,23 @@ const ChatWidget = () => {
             ref={chatContainerRef}
             className="flex-1 overflow-y-auto p-3 space-y-2 text-sm"
           >
-            {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`p-2 rounded-lg max-w-[90%] whitespace-pre-wrap ${
-                  msg.role === "user"
-                    ? "bg-violet-400 ml-auto text-right text-white"
-                    : "bg-zinc-700 text-white"
-                }`}
-              >
-                <p>{msg.text}</p>
-              </div>
-            ))}
-            {loading && (
-              <div className="bg-zinc-700 p-2 rounded-lg max-w-[90%] italic text-gray-400">
-                Typing...
-              </div>
-            )}
+              {messages.map((msg, i) => (
+                <div
+                  key={i}
+                  className={`p-2 rounded-lg max-w-[90%] whitespace-pre-wrap ${
+                    msg.role === "user"
+                      ? "bg-violet-400 ml-auto text-right text-white"
+                      : "bg-zinc-700 text-left text-white"
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              ))}
+              {loading && (
+                <div className="bg-zinc-700 p-2 rounded-lg max-w-[90%] animate-pulse">
+                  <TypingDots />
+                </div>
+              )}
           </div>
 
           {/* Input */}

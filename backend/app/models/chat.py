@@ -11,4 +11,5 @@ class Chat(Base):
   title = Column(String)
   content = Column(String)
   user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+
   user = relationship('User', back_populates='chats')

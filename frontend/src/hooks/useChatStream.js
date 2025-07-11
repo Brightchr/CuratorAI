@@ -1,4 +1,3 @@
-// src/hooks/useChatStream.js
 import { useState, useRef, useEffect } from "react";
 
 export function useChatStream() {
@@ -8,69 +7,70 @@ export function useChatStream() {
   const chatContainerRef = useRef(null);
 
   const sendMessage = async () => {
-    const trimmed = input.trim();
-    if (!trimmed) return;
+    const prompt = input.trim();
+    if (!prompt) return;
 
-    const userMessage = { role: "user", text: trimmed };
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => [...prev, { role: "user", text: prompt }]);
     setInput("");
     setLoading(true);
 
-    let aiMessage = { role: "ai", text: "" };
-    setMessages((prev) => [...prev, aiMessage]);
+    // Pre-add assistant placeholder message
+    setMessages((prev) => [...prev, { role: "assistant", text: "" }]);
 
     try {
       const response = await fetch("http://localhost:8000/api/generate/stream", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: trimmed }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt }),
       });
 
-      if (!response.ok || !response.body) throw new Error("Streaming failed");
+      if (!response.ok || !response.body) {
+        throw new Error("Failed to connect to backend.");
+      }
 
       const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let partialText = "";
+      const decoder = new TextDecoder("utf-8");
+      let buffer = "";
 
       while (true) {
-        const { done, value } = await reader.read();
+        const { value, done } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split("\n").filter(Boolean);
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop(); // preserve incomplete line for next chunk
 
-        for (const line of lines) {
+        for (const line of lines.filter(Boolean)) {
           try {
-            const parsed = JSON.parse(line);
-            if (parsed.response) {
-              partialText += parsed.response;
-              setMessages((prev) => {
-                const updated = [...prev];
-                updated[updated.length - 1] = { role: "ai", text: partialText };
-                return updated;
-              });
-            }
-          } catch {
-            // Ignore JSON errors
+            const json = JSON.parse(line);
+            const { response } = json;
+            setMessages((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1].text += response;
+              return updated;
+            });
+          } catch (e) {
+            console.error("Failed to parse line:", line);
           }
         }
       }
-    } catch (err) {
-      console.error("Streaming error:", err);
+    } catch (error) {
+      console.error("Stream error:", error);
       setMessages((prev) => [
         ...prev,
-        { role: "ai", text: "⚠️ Failed to stream response." },
+        { role: "assistant", text: "⚠️ Could not connect to the server." },
       ]);
     } finally {
       setLoading(false);
     }
   };
 
+  // Auto-scroll to bottom when messages update
   useEffect(() => {
     const el = chatContainerRef.current;
-    if (!el) return;
-    const isAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
-    if (isAtBottom) el.scrollTop = el.scrollHeight;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
   return {
