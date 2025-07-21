@@ -7,7 +7,7 @@ load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL") #load the db  URL from env
 
 # Create engine that SQLAlchemy uses to communicate with the db
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, connect_args={"sslmode": "require"}) # Require SSL in Neon
 SessionLocal = sessionmaker(autocommit =False, autoflush=False, bind=engine)
 
 
