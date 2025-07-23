@@ -1,16 +1,9 @@
-import Navbar from "../components/Navbar";
-import ChatWidget from "../components/ChatWidget.jsx";
-import Home from "../pages/Home.jsx";
-
-
-
+// src/layouts/AuthenticatedLayout.jsx
 const AuthenticatedLayout = ({ children }) => {
   return (
     <div className="bg-zinc-950 text-white min-h-screen">
-      <Navbar />
-      <ChatWidget />
-      <Home />
-      <main className="pt-16">{children}</main> {/* padding accounts for navbar */}
+      {/* Add other private-only layout elements here if needed */}
+      {children}
     </div>
   );
 };

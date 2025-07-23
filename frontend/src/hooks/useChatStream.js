@@ -1,20 +1,34 @@
+// hooks/useChatStream.js
 import { useState, useRef, useEffect } from "react";
 
-export function useChatStream() {
+export function useChatStream(options = {}) {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const chatContainerRef = useRef(null);
 
+  const messageLimit = options.messageLimit ?? Infinity;
+
   const sendMessage = async () => {
     const prompt = input.trim();
-    if (!prompt) return;
+    if (!prompt || loading) return;
+
+    // Check trial limit
+    const userMessagesCount = messages.filter((m) => m.role === "user").length;
+    if (userMessagesCount >= messageLimit) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          text: "⚠️ Trial limit reached. Please log in to continue using CuratorAI.",
+        },
+      ]);
+      return;
+    }
 
     setMessages((prev) => [...prev, { role: "user", text: prompt }]);
     setInput("");
     setLoading(true);
-
-    // Pre-add assistant placeholder message
     setMessages((prev) => [...prev, { role: "assistant", text: "" }]);
 
     try {
@@ -40,7 +54,7 @@ export function useChatStream() {
 
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split("\n");
-        buffer = lines.pop(); // preserve incomplete line for next chunk
+        buffer = lines.pop(); // save the last partial line
 
         for (const line of lines.filter(Boolean)) {
           try {
@@ -67,7 +81,6 @@ export function useChatStream() {
     }
   };
 
-  // Auto-scroll to bottom when messages update
   useEffect(() => {
     const el = chatContainerRef.current;
     if (el) el.scrollTop = el.scrollHeight;

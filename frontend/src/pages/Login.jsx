@@ -1,8 +1,9 @@
 // src/pages/Login.jsx
-import { signInWithPopup, auth, provider } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
-import { loginWithGoogle, loginWithEmail} from "../services/authService.jsx";
+import { loginWithGoogle, loginWithEmail} from "../services/authService.js";
+import { useAuth } from "../context/AuthContext";
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -10,17 +11,22 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const videoRef = useRef(null);
   const [ended, setEnded] = useState(false);
+  const { login } = useAuth();
 
 
 const handleGoogleLogin = async () => {
   try {
     const token = await loginWithGoogle();
-    const res = await fetch("http://localhost:8000/api/auth/auth/firebase", {
+    const res = await fetch("http://localhost:8000/api/auth/firebase", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idToken: token }),
     });
-    if (res.ok) navigate("/chat");
+    if (res.ok) {
+      const user = await res.json();
+      login(user);
+      navigate("/chat");
+    }
   } catch (err) {
     console.error("Google Login failed", err);
   }
@@ -29,16 +35,21 @@ const handleGoogleLogin = async () => {
 const handleManualLogin = async () => {
   try {
     const token = await loginWithEmail(email, password);
-    const res = await fetch("http://localhost:8000/api//auth/auth/firebase", {
+    const res = await fetch("http://localhost:8000/api/auth/firebase", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idToken: token }),
     });
-    if (res.ok) navigate("/chat");
+    if (res.ok) {
+      const user = await res.json();
+      login(user);
+      navigate("/chat");
+    }
   } catch (err) {
     console.error("Manual Login failed", err);
   }
 };
+
 
 
   return (
