@@ -11,5 +11,9 @@ class User(Base):
     password = Column(String, nullable=False)
     firstName = Column(String, nullable=False)
     lastName = Column(String, nullable=False)
-    # chats = relationship("Chat", back_populates="user")
+
+    # Link to Chat Model
+    chats = relationship("Chat", back_populates="user", cascade="all, delete-orphan")
+    folders = relationship('ChatFolder', back_populates='user', cascade='all, delete-orphan')
+
 

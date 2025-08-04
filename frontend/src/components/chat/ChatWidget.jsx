@@ -1,8 +1,8 @@
+// components/ChatWidget.jsx
 import { useState } from "react";
-import { useChatStream } from "../hooks/useChatStream";
+import { useChatStream } from "../../hooks/useChatStream.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpRightFromSquare, faDownLeftAndUpRightToCenter } from "@fortawesome/free-solid-svg-icons";
-
 
 const ChatWidget = () => {
   const [open, setOpen] = useState(false);
@@ -15,22 +15,19 @@ const ChatWidget = () => {
     sendMessage,
     loading,
     chatContainerRef,
-  } = useChatStream();
+  } = useChatStream({ messageLimit: 3 }); // Trial mode: limit to 3 user messages
 
-  const TypingDots = () => {
-  return (
+  const TypingDots = () => (
     <div className="flex space-x-1 justify-end text-blue-300">
       <span className="animate-bounce">.</span>
       <span className="animate-bounce delay-200">.</span>
       <span className="animate-bounce delay-400">.</span>
     </div>
   );
-};
-
 
   const closeChat = () => {
     setOpen(false);
-    setIsPoppedOut(false); // reset on close
+    setIsPoppedOut(false);
   };
 
   return (
@@ -53,7 +50,6 @@ const ChatWidget = () => {
           <div className="bg-gradient-to-b from-[#114870] to-[#383A80] text-white p-3 flex justify-between items-center">
             <span className="font-semibold text-lg">The Curator</span>
             <div className="flex gap-2 items-center">
-              {/* Popout button */}
               <button
                 onClick={() => setIsPoppedOut(!isPoppedOut)}
                 title={isPoppedOut ? "Minimize" : "Pop Out"}
@@ -64,8 +60,6 @@ const ChatWidget = () => {
                   className="w-4 h-4"
                 />
               </button>
-
-              {/* Close button */}
               <button
                 onClick={closeChat}
                 className="text-white hover:text-gray-200 text-lg"
@@ -80,23 +74,23 @@ const ChatWidget = () => {
             ref={chatContainerRef}
             className="flex-1 overflow-y-auto p-3 space-y-2 text-sm"
           >
-              {messages.map((msg, i) => (
-                <div
-                  key={i}
-                  className={`p-2 rounded-lg max-w-[90%] whitespace-pre-wrap ${
-                    msg.role === "user"
-                      ? "bg-violet-400 ml-auto text-right text-white"
-                      : "bg-zinc-700 text-left text-white"
-                  }`}
-                >
-                  {msg.text}
-                </div>
-              ))}
-              {loading && (
-                <div className="bg-zinc-700 p-2 rounded-lg max-w-[90%] animate-pulse">
-                  <TypingDots />
-                </div>
-              )}
+            {messages.map((msg, i) => (
+              <div
+                key={i}
+                className={`p-2 rounded-lg max-w-[90%] whitespace-pre-wrap ${
+                  msg.role === "user"
+                    ? "bg-violet-400 ml-auto text-right text-white"
+                    : "bg-zinc-700 text-left text-white"
+                }`}
+              >
+                {msg.text}
+              </div>
+            ))}
+            {loading && (
+              <div className="bg-zinc-700 p-2 rounded-lg max-w-[90%] animate-pulse">
+                <TypingDots />
+              </div>
+            )}
           </div>
 
           {/* Input */}

@@ -8,6 +8,11 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-
   ],
+ server: {
+    middlewareMode: true,
+    setup: (server) => {
+      server.middlewares.use(history());
+    },
+  },
 })
