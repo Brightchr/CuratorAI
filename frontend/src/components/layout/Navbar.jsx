@@ -8,7 +8,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold tracking-wide text-white">CuratorAI</h1>
         <div className="space-x-6 hidden md:flex">
-          <a href="/frontend/public" className="text-zinc-300 hover:text-white">Home</a>
+          <Link to="/" className="text-zinc-300 hover:text-white">Home</Link>
           <a href="#" className="text-zinc-300 hover:text-white">About</a>
           <a href="#" className="text-zinc-300 hover:text-white">Pricing</a>
           <a href="#" className="text-zinc-300 hover:text-white">Documentation</a>

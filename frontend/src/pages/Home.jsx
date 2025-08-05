@@ -1,7 +1,7 @@
-import Navbar from "../components/Navbar";
-import HeroSection from "../components/HeroSection";
-import Features from "../components/Features";
-import AboutSection from "../components/AboutSection";
+import Navbar from "../components/layout/Navbar";
+import HeroSection from "../components/marketing/HeroSection";
+import Features from "../components/marketing/Features.jsx";
+import AboutSection from "../components/marketing/AboutSection";
 
 const Home = () => {
   return (

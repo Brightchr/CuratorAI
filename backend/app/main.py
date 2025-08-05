@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import auth, generate
 from app.db.database import engine
-from app.models import Base
+from app.models.base import Base
 from app.api.v1 import chat_routes, message_routes, folder_routes
 
 app = FastAPI()
